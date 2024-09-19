@@ -1,30 +1,33 @@
 <?php
 
+// app/Console/Commands/ScrapeProducts.php
+
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use GuzzleHttp\Client;
+use Spatie\Crawler\Crawler;
+use Spatie\Crawler\CrawlProfiles\CrawlAllUrls;
 
 class ScrapeProducts extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:scrape-products';
+    protected $signature = 'scrape:products';
+    protected $description = 'Scrape products from ecommerce sites';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Command description';
-
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
-        //
+        $sites = [
+            'efarma' => 'https://www.efarma.com/',
+            'semprefarmacia' => 'https://www.semprefarmacia.it/',
+            'anticafarmaciaorlandi' => 'https://www.anticafarmaciaorlandi.it/',
+        ];
+
+        foreach ($sites as $name => $url) {
+            $this->info("Scraping products from {$name}");
+            Crawler::create()
+                ->setCrawlProfile(new CrawlAllUrls())
+                ->setMaximumDepth(2)
+                ->startCrawling($url);
+        }
     }
 }
